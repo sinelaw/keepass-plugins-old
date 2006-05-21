@@ -29,7 +29,12 @@
 class DateTime {
   public:
     DateTime(double date_time=0)
-      :m_date_time(date_time) {}
+      :m_date_time(date_time),m_need_update(true) {}
+
+    void set(double date_time) {
+        m_date_time=date_time;
+        m_need_update=true;
+    }
 
     bool isValid() const {
         return m_date_time!=0;
@@ -37,66 +42,84 @@ class DateTime {
 
     // Regular year, 2004 means 2004.
     unsigned int getYear() const {
-        return convert()->tm_year+1900;
+        if (!convertLazyUpdate())
+            return 0;
+        return m_tm.tm_year+1900;
     }
 
     // Ranges from 1 to 12.
     unsigned int getMonth() const {
-        return convert()->tm_mon+1;
+        if (!convertLazyUpdate())
+            return 0;
+        return m_tm.tm_mon+1;
     }
 
     // The first day is 1.
     unsigned int getDay() const {
-        return convert()->tm_mday;
+        if (!convertLazyUpdate())
+            return 0;
+        return m_tm.tm_mday;
     }
 
     // Ranges from 0 to 23.
     unsigned int getHour() const {
-        return convert()->tm_hour;
+        if (!convertLazyUpdate())
+            return 0;
+        return m_tm.tm_hour;
     }
 
     // Ranges from 0 to 59.
     unsigned int getMinute() const {
-        return convert()->tm_min;
+        if (!convertLazyUpdate())
+            return 0;
+        return m_tm.tm_min;
     }
 
     // Ranges from 0 to 59.
     unsigned int getSecond() const {
-        return convert()->tm_sec;
+        if (!convertLazyUpdate())
+            return 0;
+        return m_tm.tm_sec;
     }
 
   private:
-    static double frac(double x);
-    static double trunc(double x);
+    static double frac(double x) {
+        if (x>0)
+            return (x-floor(x));
+        if (x<0)
+            return (x+floor(-x));
+        return 0;
+    }
 
-    tm* convert() const;
+    static double trunc(double x) {
+        return x-frac(x);
+    }
+
+    static bool convert(double _date_time,tm* _tm) {
+        // Offset to 1970-Jan-01 in seconds.
+        static const time_t offset=2209161600;
+
+        // Days since 1899-Dec-30.
+        time_t days=(time_t)trunc(_date_time);
+        // Percentage of the day in seconds.
+        time_t percent=(time_t)(fabs(frac(_date_time))*60*60*24);
+
+        time_t seconds=days*60*60*24+percent-offset;
+        return _gmtime64_s(_tm,&seconds)==0;
+    }
+
+    bool convertLazyUpdate() const {
+        if (m_need_update) {
+            if (!convert(m_date_time,&m_tm))
+                return false;
+            m_need_update=false;
+        }
+        return true;
+    }
 
     double m_date_time;
+    mutable tm m_tm;
+    mutable bool m_need_update;
 };
-
-inline double DateTime::frac(double x) {
-    if (x>0)
-        return (x-floor(x));
-    if (x<0)
-        return (x+floor(-x));
-    return 0;
-}
-
-inline double DateTime::trunc(double x) {
-    return x-frac(x);
-}
-
-inline tm* DateTime::convert() const {
-    // Offset to 1970-Jan-01 in seconds.
-    static const time_t offset=2209161600;
-
-    // Days since 1899-Dec-30.
-    time_t days=(time_t)trunc(m_date_time);
-    // Percentage of the day in seconds.
-    time_t percent=(time_t)(fabs(frac(m_date_time))*60*60*24);
-
-    time_t seconds=days*60*60*24+percent-offset;
-    return gmtime(&seconds);
-}
 
 #endif // DATETIME_H
