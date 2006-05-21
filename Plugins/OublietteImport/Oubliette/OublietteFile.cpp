@@ -125,7 +125,7 @@ OublietteFile::Account OublietteFile::processNext() {
 
     // This is a security limit for corrupted files; otherwise memory allocation
     // for the string would take ages for large values.
-    const MAX_STRING_LENGTH=65535;
+    const int MAX_STRING_LENGTH=65535;
 
     // Account name.
     length=*(*ptr)++;
