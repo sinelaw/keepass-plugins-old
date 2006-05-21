@@ -54,10 +54,14 @@ KP_EXP BOOL KP_API KeePluginInit(const KP_APP_INFO* pAppInfo,KP_PLUGIN_INFO* pPl
     // Fill out the plug-in info structure.
     ZeroMemory(pPluginInfo,sizeof(*pPluginInfo));
 
-    //                          1.0.3.a
-    pPluginInfo->dwForAppVer=0x01000301;
-    //                          1.9.0.a
-    pPluginInfo->dwPluginVer=0x01090001;
+    //                          1.0.4.1
+    pPluginInfo->dwForAppVer=0x01000401;
+
+    // The first three digits of the plug-in version number match the KeePass
+    // version number for which the plug-in was compiled. The last digit marks
+    // the release number of the plug-in for this particular KeePass version.
+    //                          1.0.4.1
+    pPluginInfo->dwPluginVer=0x01000401;
 
     _tcscpy(pPluginInfo->tszPluginName,_T(PLUGIN_NAME));
     _tcscpy(pPluginInfo->tszAuthor,_T("Sebastian Schuberth"));
