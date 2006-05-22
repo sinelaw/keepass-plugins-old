@@ -2,7 +2,7 @@
  * This file is part of the Oubliette (http://oubliette.sf.net/) import plug-in
  * for KeePass (http://keepass.sf.net/).
  *
- * Copyright (C) 2005 Sebastian Schuberth <sschuberth@gmail.com>
+ * Copyright (C) 2005-2006 Sebastian Schuberth <sschuberth@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -62,11 +62,8 @@ class OublietteFile {
 
     class Header {
       public:
-#if _MSC_VER>1200
         static const unsigned char MAX_COMMENT_LENGTH=80;
-#else
-        #define MAX_COMMENT_LENGTH 80
-#endif
+
         Header();
 
         const DateTime& getCreationTime() const;
@@ -109,14 +106,8 @@ class OublietteFile {
     Account processNext();
 
   private:
-#if _MSC_VER>1200
     template<typename CIPHER>
     const Header* decrypt(const std::string& password);
-#else
-    // Visual Studio 6.0 cannot handle template member functions.
-    const Header* decryptBlowfish(const std::string& password);
-    const Header* decryptIDEA(const std::string& password);
-#endif
 
     PlainHeader m_plain_header;
     unsigned char m_password_hash[32];
