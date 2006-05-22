@@ -2,7 +2,7 @@
  * This file is part of the Oubliette (http://oubliette.sf.net/) import plug-in
  * for KeePass (http://keepass.sf.net/).
  *
- * Copyright (C) 2005 Sebastian Schuberth <sschuberth@gmail.com>
+ * Copyright (C) 2005-2006 Sebastian Schuberth <sschuberth@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,9 +23,9 @@
 #ifndef PLUGIN_H
 #define PLUGIN_H
 
-#include "../../Util/KeePluginDef.h"
+#include "../../WinGUI/Plugins/MsgInterface.h"
 
-extern "C" __declspec(dllexport) BOOL KP_API KeePluginInit(const KP_APP_INFO* pAppInfo,KP_PLUGIN_INFO* pPluginInfo);
+KP_EXP BOOL KP_API KeePluginInit(const KP_APP_INFO* pAppInfo,KP_PLUGIN_INFO* pPluginInfo);
 KP_EXP BOOL KP_API KeePluginCall(DWORD dwCode,LPARAM lParamW,LPARAM lParamL);
 KP_EXP BOOL KP_API KeePluginExit(LPARAM lParamW,LPARAM lParamL);
 

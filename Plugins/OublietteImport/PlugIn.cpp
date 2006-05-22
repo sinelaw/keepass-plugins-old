@@ -2,7 +2,7 @@
  * This file is part of the Oubliette (http://oubliette.sf.net/) import plug-in
  * for KeePass (http://keepass.sf.net/).
  *
- * Copyright (C) 2005 Sebastian Schuberth <sschuberth@gmail.com>
+ * Copyright (C) 2005-2006 Sebastian Schuberth <sschuberth@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,25 +20,30 @@
  *
  */
 
-#if _MSC_VER>1200 // Modern Visual Studios need a customized StdAfx.h file.
+#if _MSC_VER>1200
+    // Modern Visual Studios need a customized StdAfx.h file.
     #include "StdAfx.h"
 #else
-    #include "../../StdAfx.h"
+    #include "../../WinGUI/StdAfx.h"
 #endif
-#include "../../Resource.h"
 
 #include "PlugIn.h"
-
-#include "../../PwSafeDlg.h"
-#include "../../NewGUI/TranslateEx.h"
-#include "../../Util/WinUtil.h"
-
-#include <tchar.h>
 
 #include "Oubliette/OublietteFile.h"
 #include "PasswordDialog.h"
 
-#define PLUGIN_NAME "Oubliette Import Plug-In"
+#include "../../KeePassLibCpp/PwManager.h"
+#include "../../WinGUI/Util/WinUtil.h"
+
+// The first three digits of the plug-in version number match the KeePass
+// version number for which the plug-in was compiled. The last digit marks
+// the release number of the plug-in for this particular KeePass version.
+#define OUB_IMP_FORAPP  0x01000501
+#define OUB_IMP_VERSION 0x01000501
+
+#define PLUGIN_NAME   _T("Oubliette Import Plug-In")
+#define PLUGIN_AUTHOR _T("Sebastian Schuberth")
+
 #define GROUP_NAME "Imported from Oubliette"
 
 static KP_APP_INFO g_kpAppInfo;
@@ -49,27 +54,21 @@ KP_EXP BOOL KP_API KeePluginInit(const KP_APP_INFO* pAppInfo,KP_PLUGIN_INFO* pPl
         return FALSE;
 
     // Copy the application info structure.
-    memcpy(&g_kpAppInfo, pAppInfo, sizeof(KP_APP_INFO));
+    memcpy(&g_kpAppInfo,pAppInfo,sizeof(g_kpAppInfo));
 
     // Fill out the plug-in info structure.
     ZeroMemory(pPluginInfo,sizeof(*pPluginInfo));
 
-    //                          1.0.4.1
-    pPluginInfo->dwForAppVer=0x01000401;
+    pPluginInfo->dwForAppVer=OUB_IMP_FORAPP;
+    pPluginInfo->dwPluginVer=OUB_IMP_VERSION;
 
-    // The first three digits of the plug-in version number match the KeePass
-    // version number for which the plug-in was compiled. The last digit marks
-    // the release number of the plug-in for this particular KeePass version.
-    //                          1.0.4.1
-    pPluginInfo->dwPluginVer=0x01000401;
-
-    _tcscpy(pPluginInfo->tszPluginName,_T(PLUGIN_NAME));
-    _tcscpy(pPluginInfo->tszAuthor,_T("Sebastian Schuberth"));
+    _tcscpy_s(pPluginInfo->tszPluginName,PLUGIN_NAME);
+    _tcscpy_s(pPluginInfo->tszAuthor,PLUGIN_AUTHOR);
 
     pPluginInfo->dwNumCommands=1;
     pPluginInfo->pMenuItems=(KP_MENU_ITEM*)g_menuItems;
 
-    g_menuItems[0].lpCommandString="&Oubliette OUB File...";
+    g_menuItems[0].lpCommandString=_T("&Oubliette OUB File...");
     g_menuItems[0].dwIcon=26;
 
     return TRUE;
@@ -85,79 +84,72 @@ KP_EXP BOOL KP_API KeePluginExit(LPARAM lParamW,LPARAM lParamL) {
 }
 
 KP_EXP BOOL KP_API KeePluginCall(DWORD dwCode,LPARAM lParamW,LPARAM lParamL) {
-    UNREFERENCED_PARAMETER(lParamW);
     UNREFERENCED_PARAMETER(lParamL);
 
-    CPwSafeDlg *pDlg=(CPwSafeDlg*)g_kpAppInfo.pMainDlg;
-    HWND w=pDlg?pDlg->m_hWnd:GetDesktopWindow();
-
-    // Cases are in the order they are called from Keepass.
+    // Cases are in the order they are called from KeePass.
     switch (dwCode) {
         case KPM_WND_INIT_POST: {
-            if (!pDlg)
-                break;
-
-            // Inject the menu item into the "File - Import From" sub-menu. This
-            // will fail if Keepass was not compiled using the same version of
-            // Visual Studio as the plug-in.
-            BCMenu *m=(BCMenu*)pDlg->m_menu.GetSubMenu((TCHAR*)_TRL("&File"));
-            if (!m)
-                break;
-
-            m=m->GetSubBCMenu((TCHAR*)_TRL("&Import From"));
-            if (!m)
-                break;
-
-            m->AppendMenu(MF_SEPARATOR);
-            m->AppendODMenu(
-                g_menuItems[0].lpCommandString,
-                MF_STRING|MF_OWNERDRAW,
+            KP_Call(KPC_INSERT_IMPORTFROM_ITEM,0,0,0);
+            KP_Call(
+                KPC_INSERT_IMPORTFROM_ITEM,
+                (LPARAM)g_menuItems[0].lpCommandString,
                 g_menuItems[0].dwCommandID,
-                &pDlg->m_ilIcons,
                 25
             );
-
             break;
         }
         case KPM_INIT_MENU_POPUP: {
-            if (!pDlg)
-                break;
-
-            if (pDlg->m_bFileOpen)
+            if (KP_Query(KPQ_FILEOPEN,0))
                 g_menuItems[0].dwFlags&=~KPMIF_DISABLED;
             else
                 g_menuItems[0].dwFlags|=KPMIF_DISABLED;
-
             break;
         }
         case KPM_DIRECT_CONFIG: {
-            MessageBox(w,"This plug-in does not have any options.",PLUGIN_NAME,MB_OK|MB_ICONINFORMATION);
+            MessageBox(
+                g_kpAppInfo.hwndMain,
+                _T("This plug-in does not have any options."),
+                PLUGIN_NAME,
+                MB_OK|MB_ICONINFORMATION
+            );
             break;
         }
         case KPM_PLUGIN_INFO: {
-            MessageBox(w,"This plug-in imports Oubliette OUB files (see http://oubliette.sf.net/).",PLUGIN_NAME,MB_OK|MB_ICONINFORMATION);
+            MessageBox(
+                g_kpAppInfo.hwndMain,
+                _T("This plug-in imports Oubliette OUB files (see http://oubliette.sf.net/)."),
+                PLUGIN_NAME,
+                MB_OK|MB_ICONINFORMATION
+            );
             break;
         }
         case KPM_DIRECT_EXEC: {
-            if (!pDlg)
+            if (lParamW!=(LPARAM)g_menuItems[0].dwCommandID)
                 break;
 
-            if (!pDlg->m_bFileOpen)
-                MessageBox(w,"You need to open a database to import to first.",PLUGIN_NAME,MB_OK|MB_ICONWARNING);
+            if (!KP_Query(KPQ_FILEOPEN,0)) {
+                MessageBox(
+                    g_kpAppInfo.hwndMain,
+                    _T("You need to open a database to import to first."),
+                    PLUGIN_NAME,
+                    MB_OK|MB_ICONWARNING
+                );
+                break;
+            }
 
-            LPTSTR p=new TCHAR[(MAX_PATH+1)*2];
-            pDlg->m_bDisplayDialog=TRUE;
+            LPTSTR path=new TCHAR[(MAX_PATH+1)*2];
+
+            KP_Call(KPC_DISPLAYDIALOG,TRUE,0,0);
 
             CWnd window;
-            window.Attach(w);
-
-            if (WU_GetFileNameSz(TRUE,_T("oub"),p,MAX_PATH*2))
-                ImportOublietteFile(p,window);
-
+            window.Attach(g_kpAppInfo.hwndMain);
+            if (WU_GetFileNameSz(TRUE,_T("oub"),path,MAX_PATH*2))
+                ImportOublietteFile(path,window);
             window.Detach();
 
-            pDlg->m_bDisplayDialog=FALSE;
-            delete [] p;
+            KP_Call(KPC_DISPLAYDIALOG,FALSE,0,0);
+
+            delete [] path;
 
             break;
         }
@@ -188,7 +180,8 @@ void ImportOublietteFile(LPCTSTR p,CWnd& w) {
     if (dialog.DoModal()!=IDOK)
         return;
 
-    const OublietteFile::Header *header=file.decryptData((const TCHAR*)dialog.GetPassword());
+    CT2CA password(dialog.GetPassword());
+    const OublietteFile::Header *header=file.decryptData(password.m_psz);
     if (!header) {
         MessageBox(w.m_hWnd,file.getLastErrorMessage().c_str(),PLUGIN_NAME,MB_OK|MB_ICONWARNING);
         return;
@@ -199,7 +192,6 @@ void ImportOublietteFile(LPCTSTR p,CWnd& w) {
         return;
     }
 
-    CPwSafeDlg *pDlg=(CPwSafeDlg*)g_kpAppInfo.pMainDlg;
     CPwManager *pMgr=(CPwManager*)g_kpAppInfo.pPwMgr;
 
     // Create a top-level group to import to.
@@ -211,7 +203,7 @@ void ImportOublietteFile(LPCTSTR p,CWnd& w) {
     g.tCreation=ConvertDateTime(header->getCreationTime());
     g.tLastMod=ConvertDateTime(header->getModificationTime());
     g.tLastAccess=ConvertDateTime(header->getModificationTime());
-    pMgr->_GetNeverExpireTime(&g.tExpire);
+    pMgr->GetNeverExpireTime(&g.tExpire);
     // USHORT usLevel;
     pMgr->AddGroup(&g);
 
@@ -222,7 +214,6 @@ void ImportOublietteFile(LPCTSTR p,CWnd& w) {
     ULONG size=OI_ARRAY_LENGTH(buffer);
     ZeroMemory(buffer,sizeof(buffer));
 
-#if _MSC_VER>1200
     CRegKey r;
     if (r.Open(HKEY_LOCAL_MACHINE,"Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Oubliette_is1",KEY_READ)==ERROR_SUCCESS) {
         size=OI_ARRAY_LENGTH(buffer);
@@ -230,18 +221,10 @@ void ImportOublietteFile(LPCTSTR p,CWnd& w) {
         ini=buffer;
         ini+="\\Oubliette.ini";
     }
-#else
-    HKEY key;
-    RegOpenKey(HKEY_LOCAL_MACHINE,"Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Oubliette_is1",&key);
-    RegQueryValueEx(key,"Inno Setup: App Path",NULL,NULL,(unsigned char*)buffer,&size);
-    RegCloseKey(key);
-    ini=buffer;
-    ini+="\\Oubliette.ini";
-#endif
 
     g.usLevel=1;
 
-    // Loop over all entries and add them to Keepass.
+    // Loop over all entries and add them to KeePass.
     PW_ENTRY e;
     for (int i=0;i<header->getCount();++i) {
         OublietteFile::Account account=file.processNext();
@@ -263,18 +246,28 @@ void ImportOublietteFile(LPCTSTR p,CWnd& w) {
         // BYTE uuid[16];
         e.uGroupId=dwGroupId;
         e.uImageId=g.uImageId;
-        e.pszTitle=(TCHAR*)account.name.c_str();
-        e.pszURL=(TCHAR*)account.url.c_str();
-        e.pszUserName=(TCHAR*)account.username.c_str();
-        e.pszPassword=(TCHAR*)account.password.c_str();
-        e.uPasswordLen=_tcslen(e.pszPassword);
+
+        CA2CT pszTitle(account.name.c_str());
+        e.pszTitle=(TCHAR*)pszTitle.m_psz;
+
+        CA2CT pszURL(account.url.c_str());
+        e.pszURL=(TCHAR*)pszURL.m_psz;
+
+        CA2CT pszUserName(account.username.c_str());
+        e.pszUserName=(TCHAR*)pszUserName.m_psz;
+
+        CA2CT pszPassword(account.password.c_str());
+        e.pszPassword=(TCHAR*)pszPassword.m_psz;
+        e.uPasswordLen=(DWORD)_tcslen(e.pszPassword);
+
         std::string additional
             ="Oubliette \"Email\":\n"+account.email
             +"\n\n"
             +"Oubliette \"Note\":\n"+account.note
             +"\n\n"
             +"Oubliette \"Memo\":\n"+account.memo;
-        e.pszAdditional=(TCHAR*)additional.c_str();
+        CA2CT pszAdditional(additional.c_str());
+        e.pszAdditional=(TCHAR*)pszAdditional.m_psz;
 
         e.tCreation=ConvertDateTime(account.created);
         e.tLastMod=ConvertDateTime(account.created);
@@ -282,7 +275,7 @@ void ImportOublietteFile(LPCTSTR p,CWnd& w) {
         if (account.expires.isValid())
             e.tExpire=ConvertDateTime(account.expires);
         else
-            pMgr->_GetNeverExpireTime(&e.tExpire);
+            pMgr->GetNeverExpireTime(&e.tExpire);
 
         // TCHAR *pszBinaryDesc;
         // BYTE *pBinaryData;
@@ -291,10 +284,10 @@ void ImportOublietteFile(LPCTSTR p,CWnd& w) {
         pMgr->AddEntry(&e);
     }
 
-    pDlg->m_bModified=TRUE;
-    pDlg->UpdateGroupList();
-    pDlg->UpdatePasswordList();
-    int nItems=pDlg->m_cList.GetItemCount();
-    pDlg->m_cList.EnsureVisible(nItems-1,FALSE);
-    pDlg->_UpdateToolBar();
+    KP_Call(KPC_MODIFIED,TRUE,0,0);
+    KP_Call(KPC_UPDATE_GROUPLIST,0,0,0);
+    KP_Call(KPC_UPDATE_PASSWORDLIST,0,0,0);
+    int nItems=(int)KP_Query(KPQ_PWLIST_ITEMCOUNT,0);
+    KP_Call(KPC_PWLIST_ENSUREVISIBLE,nItems-1,FALSE,0);
+    KP_Call(KPC_UPDATE_TOOLBAR,0,0,0);
 }
