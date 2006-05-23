@@ -26,6 +26,7 @@
 #include <cmath>
 #include <ctime>
 
+// This class represents Delphi date and time encoded into a "double".
 class DateTime {
   public:
     DateTime(double date_time=0)

@@ -23,11 +23,18 @@
 #ifndef SHORTSTRING_H
 #define SHORTSTRING_H
 
+#include <cassert>
 #include <string>
 
+// This class represents a Delphi short string. It needs to be a POD object of
+// 256 bytes.
 template<unsigned char MAX_LENGTH=255>
 class ShortString {
   public:
+    ShortString() {
+        assert(sizeof(*this)==256);
+    }
+
     std::string getString() const {
         return std::string(m_string,m_length);
     }
