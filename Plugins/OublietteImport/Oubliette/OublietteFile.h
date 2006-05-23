@@ -25,7 +25,7 @@
 
 #include <fstream>
 #include <iostream>
-#include <string>
+#include <sstream>
 
 #include "../Delphi/DateTime.h"
 #include "../Delphi/ShortString.h"
@@ -39,19 +39,49 @@ class OublietteFile {
   public:
     enum Algorithm { ALGO_BLOWFISH,ALGO_IDEA };
 
-    class PlainHeader {
+    // This is a security limit for corrupted files; otherwise memory allocation
+    // for strings would take ages for large values.
+    static const int MAX_STRING_LENGTH=65535;
+
+    // This is the plain text header that starts the Oubliette file. It needs to
+    // be a POD object of 12 bytes.
+    class PlainTextHeader {
         friend OublietteFile;
 
       public:
-        PlainHeader();
+        PlainTextHeader() {
+            assert(sizeof(*this)==12);
+            memset(this,0,sizeof(*this));
+        }
 
-        std::string getID() const;
-        std::string getVersion() const;
-        Algorithm getAlgorithm() const;
-        unsigned long getDataSize() const;
+        std::string getID() const {
+            return std::string(m_id,OI_ARRAY_LENGTH(m_id));
+        }
 
-        bool isValid() const;
-        bool isEncrypted() const;
+        std::string getVersion() const {
+            std::stringstream stream;
+            stream << m_major_ver << '.' << m_minor_ver;
+            return stream.str();
+        }
+
+        Algorithm getAlgorithm() const {
+            return static_cast<OublietteFile::Algorithm>(m_algo);
+        }
+
+        unsigned long getDataSize() const {
+            return m_size;
+        }
+
+        bool isValid() const {
+            return getID()=="OUBPF"
+                && (m_major_ver>=1 && m_major_ver<=4)
+                && (getAlgorithm()==ALGO_BLOWFISH || getAlgorithm()==ALGO_IDEA)
+                && getDataSize()>0;
+        }
+
+        bool isEncrypted() const {
+            return m_minor_ver!=255;
+        }
 
       private:
         char m_id[5];
@@ -60,23 +90,40 @@ class OublietteFile {
         unsigned long m_size;
     };
 
-    class Header {
+    // This is the cipher text header that starts the encrypted data. It needs
+    // to be a POD object of 182 bytes.
+    class CipherTextHeader {
       public:
         static const unsigned char MAX_COMMENT_LENGTH=80;
 
-        Header();
+        CipherTextHeader() {
+            assert(sizeof(*this)==182);
+            memset(this,0,sizeof(*this));
+        }
 
-        const DateTime& getCreationTime() const;
-        const DateTime& getModificationTime() const;
+        DateTime getCreationTime() const {
+            return DateTime(m_created);
+        }
 
-        std::string getComment() const;
-        int getCount() const;
+        DateTime getModificationTime() const {
+            return DateTime(m_modified);
+        }
 
-        bool isValid() const;
+        std::string getComment() const {
+            return m_comment.getString();
+        }
+
+        int getCount() const {
+            return m_count;
+        }
+
+        bool isValid() const {
+            return m_tag==1 && m_count>0;
+        }
 
       private:
         unsigned char m_tag; // Unused, thus not exported via access methods.
-        DateTime m_created,m_modified;
+        double m_created,m_modified;
         ShortString<MAX_COMMENT_LENGTH> m_comment;
         int m_count;
     };
@@ -101,15 +148,15 @@ class OublietteFile {
     operator bool() const;
     const std::string& getLastErrorMessage() const;
 
-    const Header* decryptData(const std::string& password);
+    const CipherTextHeader* decryptData(const std::string& password);
 
     Account processNext();
 
   private:
     template<typename CIPHER>
-    const Header* decrypt(const std::string& password);
+    const CipherTextHeader* decrypt(const std::string& password);
 
-    PlainHeader m_plain_header;
+    PlainTextHeader m_plain_header;
     unsigned char m_password_hash[32];
     char *m_data_chunk,*m_data_entry;
     unsigned long m_data_size_padded;
@@ -118,9 +165,6 @@ class OublietteFile {
 };
 
 #pragma pack(pop)
-
-#include "OubliettePlainHeader.h"
-#include "OublietteHeader.h"
 
 inline OublietteFile::~OublietteFile() {
     delete [] m_data_chunk;
