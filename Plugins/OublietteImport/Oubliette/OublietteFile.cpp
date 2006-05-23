@@ -79,7 +79,7 @@ OublietteFile::OublietteFile(const string& name)
 }
 
 template<typename CIPHER>
-const OublietteFile::Header* OublietteFile::decrypt(const string& password) {
+const OublietteFile::CipherTextHeader* OublietteFile::decrypt(const string& password) {
     using namespace CryptoPP;
 
     // Calculate the password's 20-byte SHA-1 hash and pad to 32 bytes.
@@ -144,16 +144,16 @@ const OublietteFile::Header* OublietteFile::decrypt(const string& password) {
     );
 
     // Check the decrypted header for plausibility.
-    Header* header=reinterpret_cast<Header*>(m_data_chunk);
+    CipherTextHeader* header=reinterpret_cast<CipherTextHeader*>(m_data_chunk);
     if (!header->isValid()) {
         m_last_error_msg="The file is empty or corrupted.";
         return NULL;
     }
 
-    // Move the internal data pointer right after the header so calls to
+    // Move the internal data pointer right after the header so future calls to
     // processNext() will start at the first entry.
     m_data_entry=m_data_chunk;
-    m_data_entry+=sizeof(Header);
+    m_data_entry+=sizeof(CipherTextHeader);
 
     if (m_plain_header.m_major_ver>=4) {
         // Skip embedded category icons if present.
@@ -161,7 +161,9 @@ const OublietteFile::Header* OublietteFile::decrypt(const string& password) {
         int flag=*(*ptr)++;
         int count=*(*ptr)++;
         while (flag && count-->0) {
-            unsigned int length=*(*ptr)++;
+            int length=*(*ptr)++;
+            if (length<0 || length>MAX_STRING_LENGTH)
+                return NULL;
             m_data_entry+=length;
         }
     }
@@ -169,7 +171,7 @@ const OublietteFile::Header* OublietteFile::decrypt(const string& password) {
     return header;
 }
 
-const OublietteFile::Header* OublietteFile::decryptData(const string& password) {
+const OublietteFile::CipherTextHeader* OublietteFile::decryptData(const string& password) {
     using namespace CryptoPP;
 
     switch (m_plain_header.getAlgorithm()) {
@@ -185,10 +187,6 @@ const OublietteFile::Header* OublietteFile::decryptData(const string& password) 
 OublietteFile::Account OublietteFile::processNext() {
     Account result;
     int **ptr=(int**)&m_data_entry,length;
-
-    // This is a security limit for corrupted files; otherwise memory allocation
-    // for the string would take ages for large values.
-    const int MAX_STRING_LENGTH=65535;
 
     // Account name.
     length=*(*ptr)++;
