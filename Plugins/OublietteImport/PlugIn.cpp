@@ -20,13 +20,7 @@
  *
  */
 
-#if _MSC_VER>1200
-    // Modern Visual Studios need a customized StdAfx.h file.
-    #include "StdAfx.h"
-#else
-    #include "../../WinGUI/StdAfx.h"
-#endif
-
+#include "StdAfx.h"
 #include "PlugIn.h"
 
 #include "Oubliette/OublietteFile.h"
