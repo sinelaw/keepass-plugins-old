@@ -181,14 +181,9 @@ void ImportOublietteFile(LPCTSTR p,CWnd& w) {
         return;
 
     CT2CA password(dialog.GetPassword());
-    const OublietteFile::Header *header=file.decryptData(password.m_psz);
+    const OublietteFile::CipherTextHeader *header=file.decryptData(password.m_psz);
     if (!header) {
         MessageBox(w.m_hWnd,file.getLastErrorMessage().c_str(),PLUGIN_NAME,MB_OK|MB_ICONWARNING);
-        return;
-    }
-
-    if (!header->isValid()) {
-        MessageBox(w,file.getLastErrorMessage().c_str(),PLUGIN_NAME,MB_OK|MB_ICONWARNING);
         return;
     }
 
@@ -198,7 +193,7 @@ void ImportOublietteFile(LPCTSTR p,CWnd& w) {
     PW_GROUP g;
     ZeroMemory(&g,sizeof(PW_GROUP));
     // DWORD uGroupId;
-    g.uImageId=49;  // Open folder icon.
+    g.uImageId=49; // Open folder icon.
     g.pszGroupName=_T(GROUP_NAME);
     g.tCreation=ConvertDateTime(header->getCreationTime());
     g.tLastMod=ConvertDateTime(header->getModificationTime());
