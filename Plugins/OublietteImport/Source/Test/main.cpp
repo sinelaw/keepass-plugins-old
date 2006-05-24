@@ -20,7 +20,7 @@
  *
  */
 
-#include "Oubliette/OublietteFile.h"
+#include "../Oubliette/OublietteFile.h"
 
 using namespace std;
 
@@ -47,13 +47,8 @@ int main(int argc,char* argv[]) {
         return -1;
     }
 
-    const OublietteFile::Header *header=file.decryptData(argv[2]);
+    const OublietteFile::CipherTextHeader *header=file.decryptData(argv[2]);
     if (!header) {
-        cerr << file.getLastErrorMessage() << endl;
-        system("pause");
-        return -1;
-    }
-    if (!header->isValid()) {
         cerr << file.getLastErrorMessage() << endl;
         system("pause");
         return -1;

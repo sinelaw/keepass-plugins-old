@@ -175,11 +175,11 @@
 			Name="Delphi"
 			>
 			<File
-				RelativePath=".\Delphi\DateTime.h"
+				RelativePath="..\Delphi\DateTime.h"
 				>
 			</File>
 			<File
-				RelativePath=".\Delphi\ShortString.h"
+				RelativePath="..\Delphi\ShortString.h"
 				>
 			</File>
 		</Filter>
@@ -187,23 +187,11 @@
 			Name="Oubliette"
 			>
 			<File
-				RelativePath=".\Oubliette\DecryptMethod.h"
+				RelativePath="..\Oubliette\OublietteFile.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\Oubliette\OublietteFile.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\Oubliette\OublietteFile.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Oubliette\OublietteHeader.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Oubliette\OubliettePlainHeader.h"
+				RelativePath="..\Oubliette\OublietteFile.h"
 				>
 			</File>
 		</Filter>

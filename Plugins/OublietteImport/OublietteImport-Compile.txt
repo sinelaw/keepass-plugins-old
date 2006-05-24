@@ -1,0 +1,33 @@
+In order to compile the plug-in from sources, you also need to download the
+version matching KeePass sources from
+
+    http://keepass.sourceforge.net/download.php
+
+and extract the archive. Under the directory where you extracted the KeePass
+sources to (that is parallel to the "Build", "Docs", "Ext" etc. directories)
+you then have to create a "Plugins\OublietteImport" directory where you copy
+these files and directories to. The structure should then look something like
+this:
+
+    KeePass
+     |
+     +-Build
+     |
+     +-Docs
+     |
+     +-Ext
+     |
+     .
+     .
+     .
+     |
+     +-Plugins
+     |  |
+     .  +-OublietteImport
+     .     |
+     .     +-Data
+           |
+           +-Source
+
+Sebastian Schuberth <sschuberth@gmail.com>
+2006.may.24
