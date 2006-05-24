@@ -26,8 +26,8 @@
 #include "Oubliette/OublietteFile.h"
 #include "PasswordDialog.h"
 
-#include "../../KeePassLibCpp/PwManager.h"
-#include "../../WinGUI/Util/WinUtil.h"
+#include "../../../KeePassLibCpp/PwManager.h"
+#include "../../../WinGUI/Util/WinUtil.h"
 
 // The first three digits of the plug-in version number match the KeePass
 // version number for which the plug-in was compiled. The last digit marks

@@ -23,7 +23,7 @@
 #ifndef PLUGIN_H
 #define PLUGIN_H
 
-#include "../../WinGUI/Plugins/MsgInterface.h"
+#include "../../../WinGUI/Plugins/MsgInterface.h"
 
 KP_EXP BOOL KP_API KeePluginInit(const KP_APP_INFO* pAppInfo,KP_PLUGIN_INFO* pPluginInfo);
 KP_EXP BOOL KP_API KeePluginCall(DWORD dwCode,LPARAM lParamW,LPARAM lParamL);
