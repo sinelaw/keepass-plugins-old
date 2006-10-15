@@ -32,8 +32,8 @@
 // The first three digits of the plug-in version number match the KeePass
 // version number for which the plug-in was compiled. The last digit marks
 // the release number of the plug-in for this particular KeePass version.
-#define OUB_IMP_FORAPP  0x01000501
-#define OUB_IMP_VERSION 0x01000501
+#define OUB_IMP_FORAPP  0x01000601
+#define OUB_IMP_VERSION 0x01000601
 
 #define PLUGIN_NAME   _T("Oubliette Import Plug-In")
 #define PLUGIN_AUTHOR _T("Sebastian Schuberth")
