@@ -4,8 +4,8 @@ KeePass sources that match the plug-ins base version number from
     http://keepass.sourceforge.net/download.php
 
 and extract the archive. Under the directory where you extracted the KeePass
-sources to (that is parallel to the "Build", "Docs", "Ext" etc. directories)
-you then have to create a "Plugins\OublietteImport" directory where you copy
+sources to, on the same level as the "Build", "Docs", "Ext" etc. directories
+you have to create the "Plugins\OublietteImport" directories where you copy
 these files and directories to. The structure should then look something like
 this:
 
@@ -30,12 +30,18 @@ this:
            +-Source
 
 Moreover, you will need to download the Crypto++ library. As the time of
-writing, the only version of Crypto++ that will compile with Visual Studio 2005
-is available in CVS only:
+writing, a version of Crypto++ that will compile with Visual Studio 2005 is
+available in CVS only:
 
     http://cryptopp.cvs.sourceforge.net/cryptopp/c5/
 
-This is what you need to checkout, compile from sources and link the plug-in to.
+The "c5" module is what you need to checkout. Compile the static version of the
+library named "cryptlib", rename the debug version library from "cryptlib.lib"
+to "cryptlibd.lib", put it to a common directory with the release version, add
+this directory to the library paths, as well as adjusting the include paths.
+
+Now the Oubliette plug-in should find both the required KeePass and crypto++
+files and compile fine.
 
 Sebastian Schuberth <sschuberth@gmail.com>
-2006.jun.22
+2006.oct.15
