@@ -40,6 +40,8 @@
 
 #define GROUP_NAME "Imported from Oubliette"
 
+#define VERSION_MASK(v,s) (v>>s)&0xff
+
 static KP_APP_INFO g_kpAppInfo;
 static KP_MENU_ITEM g_menuItems[1];
 
@@ -102,19 +104,22 @@ KP_EXP BOOL KP_API KeePluginCall(DWORD dwCode,LPARAM lParamW,LPARAM lParamL) {
         case KPM_DIRECT_CONFIG: {
             MessageBox(
                 g_kpAppInfo.hwndMain,
-                _T("This plug-in does not have any options."),
+                _T("This plug-in does not have any options to configure."),
                 PLUGIN_NAME,
                 MB_OK|MB_ICONINFORMATION
             );
             break;
         }
         case KPM_PLUGIN_INFO: {
-            MessageBox(
-                g_kpAppInfo.hwndMain,
-                _T("This plug-in imports Oubliette OUB files (see http://oubliette.sf.net/)."),
-                PLUGIN_NAME,
-                MB_OK|MB_ICONINFORMATION
+            static TCHAR buffer[256];
+            _stprintf_s(
+                buffer,
+                _countof(buffer),
+                "This plug-in imports Oubliette OUB files (see http://oubliette.sf.net/).\n"
+                "It was compiled for use with version %u.%u%u of KeePass.",
+                VERSION_MASK(OUB_IMP_FORAPP,24),VERSION_MASK(OUB_IMP_FORAPP,16),VERSION_MASK(OUB_IMP_FORAPP,8)
             );
+            MessageBox(g_kpAppInfo.hwndMain,buffer,PLUGIN_NAME,MB_OK|MB_ICONINFORMATION);
             break;
         }
         case KPM_DIRECT_EXEC: {
