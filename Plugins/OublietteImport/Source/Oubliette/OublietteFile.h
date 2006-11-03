@@ -26,6 +26,7 @@
 #include <fstream>
 #include <iostream>
 #include <sstream>
+#include <vector>
 
 #include "../Delphi/DateTime.h"
 #include "../Delphi/ShortString.h"
@@ -128,7 +129,6 @@ class OublietteFile {
         int m_count;
     };
 
-#pragma pack(push,1)
     struct BitmapFileHeader {
         unsigned short Type;
         unsigned int   Size;
@@ -150,7 +150,6 @@ class OublietteFile {
         unsigned int   ClrUsed;
         unsigned int   ClrImportant;
     };
-#pragma pack(pop)
 
     struct Account {
         std::string name;
@@ -175,6 +174,7 @@ class OublietteFile {
     const CipherTextHeader* decryptData(const std::string& password);
 
     Account processNext();
+    const std::string& getCategoryName(int index) const;
 
   private:
     template<typename CIPHER>
@@ -184,6 +184,8 @@ class OublietteFile {
     unsigned char m_password_hash[32];
     char *m_data_chunk,*m_data_entry;
     unsigned long m_data_size_padded;
+
+    std::vector<std::string> m_category_names;
 
     std::string m_last_error_msg;
 };
@@ -200,6 +202,13 @@ inline OublietteFile::operator bool() const {
 
 inline const std::string& OublietteFile::getLastErrorMessage() const {
     return m_last_error_msg;
+}
+
+inline const std::string& OublietteFile::getCategoryName(int index) const {
+    static const std::string empty;
+    if (index>=0 && index<static_cast<int>(m_category_names.size()))
+        return m_category_names[index];
+    return empty;
 }
 
 #endif // OUBLIETTEFILE_H

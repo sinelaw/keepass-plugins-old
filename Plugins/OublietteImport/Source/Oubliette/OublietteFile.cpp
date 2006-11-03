@@ -159,6 +159,7 @@ const OublietteFile::CipherTextHeader* OublietteFile::decrypt(const string& pass
             int length=*(*ptr4)++;
             if (length<0 || length>MAX_STRING_LENGTH)
                 return NULL;
+            m_category_names.push_back(string(m_data_entry,length));
             m_data_entry+=length;
         }
 

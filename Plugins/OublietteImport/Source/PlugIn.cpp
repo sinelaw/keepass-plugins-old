@@ -222,13 +222,17 @@ void ImportOublietteFile(LPCTSTR p,CWnd& w) {
     PW_ENTRY e;
     for (int i=0;i<header->getCount();++i) {
         OublietteFile::Account account=file.processNext();
+        g.uImageId=account.category;
 
         // Add a "Subgroup" for every Oubliette category.
-        CString category;
-        category.Format(_T("Category%i"),account.category+1);
-        GetPrivateProfileString("Categories",category,category,buffer,size,ini);
-        g.uImageId=account.category;
-        g.pszGroupName=buffer;
+        CString category=file.getCategoryName(i).c_str();
+        if (category.IsEmpty()) {
+            category.Format(_T("Category%i"),account.category+1);
+            GetPrivateProfileString("Categories",category,category,buffer,size,ini);
+            g.pszGroupName=buffer;
+        }
+        g.pszGroupName=category.GetBuffer();
+
         // Create each category only once.
         DWORD dwGroupId=pMgr->GetGroupId(g.pszGroupName);
         if (dwGroupId==DWORD_MAX) {
