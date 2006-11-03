@@ -128,6 +128,30 @@ class OublietteFile {
         int m_count;
     };
 
+#pragma pack(push,1)
+    struct BitmapFileHeader {
+        unsigned short Type;
+        unsigned int   Size;
+        unsigned short Reserved1;
+        unsigned short Reserved2;
+        unsigned int   OffBits;
+    };
+
+    struct BitmapInfoHeader {
+        unsigned int   Size;
+        int            Width;
+        int            Height;
+        unsigned short Planes;
+        unsigned short BitCount;
+        unsigned int   Compression;
+        unsigned int   SizeImage;
+        int            XPelsPerMeter;
+        int            YPelsPerMeter;
+        unsigned int   ClrUsed;
+        unsigned int   ClrImportant;
+    };
+#pragma pack(pop)
+
     struct Account {
         std::string name;
         std::string username,password;

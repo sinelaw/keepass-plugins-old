@@ -151,16 +151,83 @@ const OublietteFile::CipherTextHeader* OublietteFile::decrypt(const string& pass
     m_data_entry+=sizeof(CipherTextHeader);
 
     if (m_plain_header.m_major_ver>=4) {
-        // Skip embedded category icons if present.
-        int **ptr=(int**)&m_data_entry;
-        int flag=*(*ptr)++;
-        int count=*(*ptr)++;
+        // Skip embedded category names (Delphi ShortStrings) if present.
+        int **ptr4=(int**)&m_data_entry;
+        int flag=*(*ptr4)++;
+        int count=*(*ptr4)++;
         while (flag && count-->0) {
-            int length=*(*ptr)++;
+            int length=*(*ptr4)++;
             if (length<0 || length>MAX_STRING_LENGTH)
                 return NULL;
             m_data_entry+=length;
         }
+
+        // Skip embedded category icons (a Delphi TImageList) if present.
+        const int TPF0=0x30465054;
+        if (*(*ptr4)++!=TPF0)
+            return NULL;
+
+        // "TImageList"
+        unsigned char length=(unsigned char)*m_data_entry++;
+        m_data_entry+=length;
+
+        // "CategoryIMG"
+        length=(unsigned char)*m_data_entry++;
+        m_data_entry+=length;
+
+        // "Left"
+        length=(unsigned char)*m_data_entry++;
+        m_data_entry+=length+3;
+
+        // "Top"
+        length=(unsigned char)*m_data_entry++;
+        m_data_entry+=length+3;
+
+        // "Bitmap"
+        length=(unsigned char)*m_data_entry++;
+        m_data_entry+=length;
+
+        /*** Reverse engineered / guessed stuff ahead ***/
+
+        short **ptr2=(short**)&m_data_entry;
+
+        m_data_entry+=5;
+
+        const int IL11=0x01014c49;
+        if (*(*ptr4)++!=IL11)
+            return NULL;
+
+        // Number of images in the list.
+        (*ptr2)++;
+
+        (*ptr2)+=2;
+
+        // Image width & height.
+        (*ptr2)++;
+        (*ptr2)++;
+
+        m_data_entry+=14;
+
+        /*** Parse the embedded bitmap files ***/
+
+        BitmapFileHeader bmfh;
+        BitmapInfoHeader bmih;
+
+        const short BM=0x4d42;
+        while (**ptr2==BM) {
+            memcpy(&bmfh,m_data_entry,sizeof(bmfh));
+            m_data_entry+=sizeof(bmfh);
+
+            memcpy(&bmih,m_data_entry,sizeof(bmih));
+            m_data_entry+=sizeof(bmih);
+
+            if (bmih.Size!=sizeof(bmih))
+                return NULL;
+
+            m_data_entry+=bmih.SizeImage;
+        }
+
+        m_data_entry+=32;
     }
 
     return header;
