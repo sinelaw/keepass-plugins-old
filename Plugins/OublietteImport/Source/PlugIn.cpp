@@ -35,7 +35,7 @@
 #define OUB_IMP_FORAPP  0x01000601
 #define OUB_IMP_VERSION 0x01000601
 
-#define OUB_IMP_RELEASE 2
+#define OUB_IMP_RELEASE 3
 
 #define PLUGIN_NAME   _T("Oubliette Import Plug-In")
 #define PLUGIN_AUTHOR _T("Sebastian Schuberth")
