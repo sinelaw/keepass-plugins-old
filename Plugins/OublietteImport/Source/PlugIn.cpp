@@ -35,6 +35,8 @@
 #define OUB_IMP_FORAPP  0x01000601
 #define OUB_IMP_VERSION 0x01000601
 
+#define OUB_IMP_RELEASE 2
+
 #define PLUGIN_NAME   _T("Oubliette Import Plug-In")
 #define PLUGIN_AUTHOR _T("Sebastian Schuberth")
 
@@ -115,8 +117,9 @@ KP_EXP BOOL KP_API KeePluginCall(DWORD dwCode,LPARAM lParamW,LPARAM lParamL) {
             _stprintf_s(
                 buffer,
                 _countof(buffer),
-                "This plug-in imports Oubliette OUB files (see http://oubliette.sf.net/).\n"
-                "It was compiled for use with version %u.%u%u of KeePass.",
+                "A plug-in to import Oubliette OUB files (see http://oubliette.sf.net/).\n"
+                "This is release %u of the version compiled for KeePass %u.%u%u.",
+                OUB_IMP_RELEASE,
                 VERSION_MASK(OUB_IMP_FORAPP,24),VERSION_MASK(OUB_IMP_FORAPP,16),VERSION_MASK(OUB_IMP_FORAPP,8)
             );
             MessageBox(g_kpAppInfo.hwndMain,buffer,PLUGIN_NAME,MB_OK|MB_ICONINFORMATION);
