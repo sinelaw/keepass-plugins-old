@@ -155,80 +155,91 @@ const OublietteFile::CipherTextHeader* OublietteFile::decrypt(const string& pass
         int **ptr4=(int**)&m_data_entry;
         int flag=*(*ptr4)++;
         int count=*(*ptr4)++;
-        while (flag && count-->0) {
-            int length=*(*ptr4)++;
-            if (length<0 || length>MAX_STRING_LENGTH)
+
+        if (flag>0) {
+            while (count-->0) {
+                int length=*(*ptr4)++;
+                if (length<0 || length>MAX_STRING_LENGTH) {
+                    m_last_error_msg="String length overflow detected.";
+                    return NULL;
+                }
+                m_category_names.push_back(string(m_data_entry,length));
+                m_data_entry+=length;
+            }
+
+            // Skip embedded category icons (a Delphi TImageList) if present.
+            const int TPF0=0x30465054;
+            if (*(*ptr4)++!=TPF0) {
+                m_last_error_msg="Invalid Delphi resource header.";
                 return NULL;
-            m_category_names.push_back(string(m_data_entry,length));
+            }
+
+            // "TImageList"
+            unsigned char length=(unsigned char)*m_data_entry++;
             m_data_entry+=length;
-        }
 
-        // Skip embedded category icons (a Delphi TImageList) if present.
-        const int TPF0=0x30465054;
-        if (*(*ptr4)++!=TPF0)
-            return NULL;
+            // "CategoryIMG"
+            length=(unsigned char)*m_data_entry++;
+            m_data_entry+=length;
 
-        // "TImageList"
-        unsigned char length=(unsigned char)*m_data_entry++;
-        m_data_entry+=length;
+            // "Left"
+            length=(unsigned char)*m_data_entry++;
+            m_data_entry+=length+3;
 
-        // "CategoryIMG"
-        length=(unsigned char)*m_data_entry++;
-        m_data_entry+=length;
+            // "Top"
+            length=(unsigned char)*m_data_entry++;
+            m_data_entry+=length+3;
 
-        // "Left"
-        length=(unsigned char)*m_data_entry++;
-        m_data_entry+=length+3;
+            // "Bitmap"
+            length=(unsigned char)*m_data_entry++;
+            m_data_entry+=length;
 
-        // "Top"
-        length=(unsigned char)*m_data_entry++;
-        m_data_entry+=length+3;
+            /*** Reverse engineered / guessed stuff ahead ***/
 
-        // "Bitmap"
-        length=(unsigned char)*m_data_entry++;
-        m_data_entry+=length;
+            short **ptr2=(short**)&m_data_entry;
 
-        /*** Reverse engineered / guessed stuff ahead ***/
+            m_data_entry+=5;
 
-        short **ptr2=(short**)&m_data_entry;
-
-        m_data_entry+=5;
-
-        const int IL11=0x01014c49;
-        if (*(*ptr4)++!=IL11)
-            return NULL;
-
-        // Number of images in the list.
-        (*ptr2)++;
-
-        (*ptr2)+=2;
-
-        // Image width & height.
-        (*ptr2)++;
-        (*ptr2)++;
-
-        m_data_entry+=14;
-
-        /*** Parse the embedded bitmap files ***/
-
-        BitmapFileHeader bmfh;
-        BitmapInfoHeader bmih;
-
-        const short BM=0x4d42;
-        while (**ptr2==BM) {
-            memcpy(&bmfh,m_data_entry,sizeof(bmfh));
-            m_data_entry+=sizeof(bmfh);
-
-            memcpy(&bmih,m_data_entry,sizeof(bmih));
-            m_data_entry+=sizeof(bmih);
-
-            if (bmih.Size!=sizeof(bmih))
+            const int IL11=0x01014c49;
+            if (*(*ptr4)++!=IL11) {
+                m_last_error_msg="Invalid Delphi TImageList header.";
                 return NULL;
+            }
 
-            m_data_entry+=bmih.SizeImage;
+            // Number of images in the list.
+            (*ptr2)++;
+
+            (*ptr2)+=2;
+
+            // Image width & height.
+            (*ptr2)++;
+            (*ptr2)++;
+
+            m_data_entry+=14;
+
+            /*** Parse the embedded bitmap files ***/
+
+            BitmapFileHeader bmfh;
+            BitmapInfoHeader bmih;
+
+            const short BM=0x4d42;
+            while (**ptr2==BM) {
+                memcpy(&bmfh,m_data_entry,sizeof(bmfh));
+                m_data_entry+=sizeof(bmfh);
+
+                memcpy(&bmih,m_data_entry,sizeof(bmih));
+                m_data_entry+=sizeof(bmih);
+
+                if (bmih.Size!=sizeof(bmih)) {
+                    m_last_error_msg="Invalid bitmap info header size.";
+                    return NULL;
+                }
+
+                m_data_entry+=bmih.SizeImage;
+            }
+
+            m_data_entry+=32;
         }
-
-        m_data_entry+=32;
     }
 
     return header;
@@ -250,6 +261,8 @@ const OublietteFile::CipherTextHeader* OublietteFile::decryptData(const string& 
 OublietteFile::Account OublietteFile::processNext() {
     Account result;
     int **ptr=(int**)&m_data_entry,length;
+
+    m_last_error_msg="String length overflow detected.";
 
     // Account name.
     length=*(*ptr)++;
@@ -311,6 +324,8 @@ OublietteFile::Account OublietteFile::processNext() {
         result.note=string(m_data_entry,length);
         m_data_entry+=length;
     }
+
+    m_last_error_msg="";
 
     return result;
 }
