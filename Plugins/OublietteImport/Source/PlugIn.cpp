@@ -261,12 +261,23 @@ void ImportOublietteFile(LPCTSTR p,CWnd& w) {
         e.pszPassword=(TCHAR*)pszPassword.m_psz;
         e.uPasswordLen=(DWORD)_tcslen(e.pszPassword);
 
-        std::string additional
-            ="Oubliette \"Email\":\n"+account.email
-            +"\n\n"
-            +"Oubliette \"Note\":\n"+account.note
-            +"\n\n"
-            +"Oubliette \"Memo\":\n"+account.memo;
+        std::string additional;
+
+        if (!account.email.empty())
+            additional+="Oubliette \"Email\":\n"+account.email;
+
+        if (!account.note.empty()) {
+            if (!additional.empty())
+                additional+="\n\n";
+            additional+="Oubliette \"Note\":\n"+account.note;
+        }
+
+        if (!account.memo.empty()) {
+            if (!additional.empty())
+                additional+="\n\n";
+            additional+="Oubliette \"Memo\":\n"+account.memo;
+        }
+
         CA2CT pszAdditional(additional.c_str());
         e.pszAdditional=(TCHAR*)pszAdditional.m_psz;
 
