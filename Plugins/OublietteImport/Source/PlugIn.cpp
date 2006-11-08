@@ -264,18 +264,18 @@ void ImportOublietteFile(LPCTSTR p,CWnd& w) {
         std::string additional;
 
         if (!account.email.empty())
-            additional+="Oubliette \"Email\":\n"+account.email;
+            additional+="Email:\n"+account.email;
 
         if (!account.note.empty()) {
             if (!additional.empty())
                 additional+="\n\n";
-            additional+="Oubliette \"Note\":\n"+account.note;
+            additional+="Note:\n"+account.note;
         }
 
         if (!account.memo.empty()) {
             if (!additional.empty())
                 additional+="\n\n";
-            additional+="Oubliette \"Memo\":\n"+account.memo;
+            additional+="Memo:\n"+account.memo;
         }
 
         CA2CT pszAdditional(additional.c_str());
