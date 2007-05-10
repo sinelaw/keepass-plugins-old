@@ -14,7 +14,10 @@ KeePass 1.x with a plug-in that was compiled for an older version, KeePass 1.x w
 issue a warning. If you load the plug-in nontheless you may risk to get crashes
 and all kinds of strange effects, but it may also work just fine.
 
-I hope you find this plug-in useful.
+If you find this plug-in useful and it helped you to save some time, please
+consider donating to my SourceForce user at
+
+    http://sourceforge.net/donate/index.php?user_id=787298
 
 Sebastian Schuberth <sschuberth@gmail.com>
 2007.may.10
