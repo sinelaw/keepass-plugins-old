@@ -1,9 +1,9 @@
 In order to compile the plug-in from sources, you also need to download the
-KeePass sources that match the plug-ins base version number from
+KeePass 1.x sources that match the plug-ins base version number from
 
-    http://keepass.sourceforge.net/download.php
+    http://keepass.info/download.html
 
-and extract the archive. Under the directory where you extracted the KeePass
+and extract the archive. Under the directory where you extracted the KeePass 1.x
 sources to, on the same level as the "Build", "Docs", "Ext" etc. directories
 you have to create the "Plugins\OublietteImport" directories where you copy
 these files and directories to. The structure should then look something like
@@ -40,8 +40,8 @@ library named "cryptlib", rename the debug version library from "cryptlib.lib"
 to "cryptlibd.lib", put it to a common directory with the release version, add
 this directory to the library paths, as well as adjusting the include paths.
 
-Now the Oubliette plug-in should find both the required KeePass and crypto++
+Now the Oubliette plug-in should find both the required KeePass 1.x and crypto++
 files and compile fine.
 
 Sebastian Schuberth <sschuberth@gmail.com>
-2006.oct.15
+2007.may.10
