@@ -26,13 +26,10 @@
 
 #include "OublietteFile.h"
 
-// Reduce the warning level to get rid of tons of warnings.
-#pragma warning(push,2)
-#include <sha.h>
-#include <modes.h>
-#include <blowfish.h>
-#include <idea.h>
-#pragma warning(pop)
+#include "../../Crypto++/sha.h"
+#include "../../Crypto++/modes.h"
+#include "../../Crypto++/blowfish.h"
+#include "../../Crypto++/idea.h"
 
 using namespace std;
 

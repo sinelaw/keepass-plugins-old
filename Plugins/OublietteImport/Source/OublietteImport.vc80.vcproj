@@ -60,8 +60,9 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="../../../Ext/WinGUI_API/KeePass.lib cryptlibd.lib"
+				AdditionalDependencies="../../../Ext/WinGUI_API/KeePass.lib cryptlib.lib"
 				LinkIncremental="2"
+				AdditionalLibraryDirectories="../Crypto++/Win32/output/debug"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				TargetMachine="1"
@@ -136,6 +137,7 @@
 				Name="VCLinkerTool"
 				AdditionalDependencies="../../../Ext/WinGUI_API/KeePass.lib cryptlib.lib"
 				LinkIncremental="1"
+				AdditionalLibraryDirectories="../Crypto++/Win32/output/release"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				OptimizeReferences="2"
