@@ -35,7 +35,8 @@
 #define OUB_IMP_FORAPP  0x01000801
 #define OUB_IMP_VERSION 0x01000801
 
-#define OUB_IMP_RELEASE 4
+// The release numbering is supposed to restart at 1 for every new KeePass version.
+#define OUB_IMP_RELEASE 1
 
 #define PLUGIN_NAME   _T("Oubliette Import Plug-In")
 #define PLUGIN_AUTHOR _T("Sebastian Schuberth")
