@@ -32,8 +32,8 @@
 // The first three digits of the plug-in version number match the KeePass
 // version number for which the plug-in was compiled. The last digit marks
 // the release number of the plug-in for this particular KeePass version.
-#define OUB_IMP_FORAPP  0x01000801
-#define OUB_IMP_VERSION 0x01000801
+#define OUB_IMP_FORAPP  0x01000901
+#define OUB_IMP_VERSION 0x01000901
 
 // The release numbering is supposed to restart at 1 for every new KeePass version.
 #define OUB_IMP_RELEASE 1
