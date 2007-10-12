@@ -119,7 +119,8 @@ KP_EXP BOOL KP_API KeePluginCall(DWORD dwCode,LPARAM lParamW,LPARAM lParamL) {
                 buffer,
                 _countof(buffer),
                 "A plug-in to import Oubliette OUB files (see http://oubliette.sf.net/).\n"
-                "This is release %u of the version compiled for KeePass %u.%u%u.",
+                "This is release %u of the version compiled for KeePass %u.%u%u.\n"
+                "Written by Sebastian Schuberth <sschuberth@gmail.com>.",
                 OUB_IMP_RELEASE,
                 VERSION_MASK(OUB_IMP_FORAPP,24),VERSION_MASK(OUB_IMP_FORAPP,16),VERSION_MASK(OUB_IMP_FORAPP,8)
             );
