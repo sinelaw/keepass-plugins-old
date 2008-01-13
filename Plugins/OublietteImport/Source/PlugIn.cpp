@@ -32,10 +32,11 @@
 // The first three digits of the plug-in version number match the KeePass
 // version number for which the plug-in was compiled. The last digit marks
 // the release number of the plug-in for this particular KeePass version.
-#define OUB_IMP_FORAPP  0x01000901
-#define OUB_IMP_VERSION 0x01000901
+#define OUB_IMP_FORAPP  0x01010001 // AA.II.PP.RR
+#define OUB_IMP_VERSION 0x01010001 // A = major, I = minor, P = patch, R = release
 
-// The release numbering is supposed to restart at 1 for every new KeePass version.
+// The release numbering is supposed to restart at 1 for every new KeePass
+// version the plug-in is re-compiled for.
 #define OUB_IMP_RELEASE 1
 
 #define PLUGIN_NAME   _T("Oubliette Import Plug-In")
@@ -43,7 +44,7 @@
 
 #define GROUP_NAME "Imported from Oubliette"
 
-#define VERSION_MASK(v,s) (v>>s)&0xff
+#define VERSION_MASK(v,s) ((v>>s)&0xff)
 
 static KP_APP_INFO g_kpAppInfo;
 static KP_MENU_ITEM g_menuItems[1];
@@ -114,15 +115,15 @@ KP_EXP BOOL KP_API KeePluginCall(DWORD dwCode,LPARAM lParamW,LPARAM lParamL) {
             break;
         }
         case KPM_PLUGIN_INFO: {
-            static TCHAR buffer[256];
+            static TCHAR buffer[512]={'\0'};
             _stprintf_s(
                 buffer,
-                _countof(buffer),
+                _countof(buffer)-1,
                 "A plug-in to import Oubliette OUB files (see http://oubliette.sf.net/).\n"
                 "This is release %u of the version compiled for KeePass %u.%u%u.\n"
                 "Written by Sebastian Schuberth <sschuberth@gmail.com>.\n\n"
                 "Usage note: You need to first create or open a KeePass database file\n"
-                "to import to before the plug-in's menu items get enabled."
+                "to import to before you can choose to import from an Oubliette file.",
                 OUB_IMP_RELEASE,
                 VERSION_MASK(OUB_IMP_FORAPP,24),VERSION_MASK(OUB_IMP_FORAPP,16),VERSION_MASK(OUB_IMP_FORAPP,8)
             );
