@@ -26,10 +26,10 @@
 
 #include "OublietteFile.h"
 
-#include "../../Crypto++/sha.h"
-#include "../../Crypto++/modes.h"
-#include "../../Crypto++/blowfish.h"
-#include "../../Crypto++/idea.h"
+#include <cryptopp/sha.h>
+#include <cryptopp/modes.h>
+#include <cryptopp/blowfish.h>
+#include <cryptopp/idea.h>
 
 using namespace std;
 

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8,00"
+	Version="8.00"
 	Name="OublietteImport"
 	ProjectGUID="{C61BDDF5-0DF1-4AAC-B26B-FC99297BFA5D}"
 	RootNamespace="OublietteImportvc80"
@@ -40,6 +40,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
+				AdditionalIncludeDirectories="..\Extern"
 				PreprocessorDefinitions="COMPILE_DLL_EX;WIN32;_DEBUG;_WINDOWS;_USRDLL"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -62,7 +63,7 @@
 				Name="VCLinkerTool"
 				AdditionalDependencies="../../../Ext/WinGUI_API/KeePass.lib cryptlib.lib"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="../Crypto++/Win32/output/debug"
+				AdditionalLibraryDirectories="../Extern/cryptopp/Win32/output/debug"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				TargetMachine="1"
@@ -117,6 +118,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
+				AdditionalIncludeDirectories="..\Extern"
 				PreprocessorDefinitions="COMPILE_DLL_EX;WIN32;NDEBUG;_WINDOWS;_USRDLL"
 				RuntimeLibrary="0"
 				UsePrecompiledHeader="0"
@@ -137,7 +139,7 @@
 				Name="VCLinkerTool"
 				AdditionalDependencies="../../../Ext/WinGUI_API/KeePass.lib cryptlib.lib"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="../Crypto++/Win32/output/release"
+				AdditionalLibraryDirectories="../Extern/cryptopp/Win32/output/release"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				OptimizeReferences="2"
