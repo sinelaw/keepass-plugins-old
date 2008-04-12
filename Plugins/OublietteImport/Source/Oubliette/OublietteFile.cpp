@@ -74,6 +74,12 @@ template<typename CIPHER>
 const OublietteFile::CipherTextHeader* OublietteFile::decrypt(const string& password) {
     using namespace CryptoPP;
 
+    // Encryption for the "random" Initialization Vector.
+    typedef ECB_Mode<CIPHER>::Encryption IVEncryption;
+
+    // Encryption for the (hashed and padded) password.
+    typedef CBC_Mode<CIPHER>::Encryption PWEncryption;
+
     // Calculate the password's 20-byte SHA-1 hash and pad to 32 bytes.
     byte digest[sizeof(m_password_hash)];
     memset(digest,0xff,sizeof(digest));
@@ -92,16 +98,18 @@ const OublietteFile::CipherTextHeader* OublietteFile::decrypt(const string& pass
     // Generate a "random" IV like DCPcrypt does.
     byte iv[CIPHER::BLOCKSIZE];
     memset(iv,0xff,sizeof(iv));
-    ECB_Mode<CIPHER>::Encryption enc_iv(digest,key_length);
-    enc_iv.ProcessData(iv,iv,sizeof(iv));
+    IVEncryption *enc_iv=new IVEncryption(digest,key_length);
+    enc_iv->ProcessData(iv,iv,sizeof(iv));
+    delete enc_iv;
 
     // Initialize the decryption incl. encryption needed for padding.
     CBC_Mode<CIPHER>::Decryption dec_data(digest,key_length,iv);
     CIPHER::Encryption enc_pad(digest,key_length);
 
     // Encrypt the padded password's SHA-1 hash.
-    CBC_Mode<CIPHER>::Encryption enc_digest(digest,key_length,iv);
-    enc_digest.ProcessData(digest,digest,sizeof(digest));
+    PWEncryption *enc_digest=new PWEncryption(digest,key_length,iv);
+    enc_digest->ProcessData(digest,digest,sizeof(digest));
+    delete enc_digest;
 
     // Compare to the stored encrypted hash.
     unsigned int *a=(unsigned int*)m_password_hash;
