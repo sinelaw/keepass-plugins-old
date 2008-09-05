@@ -32,8 +32,8 @@
 // The first three digits of the plug-in version number match the KeePass
 // version number for which the plug-in was compiled. The last digit marks
 // the release number of the plug-in for this particular KeePass version.
-#define OUB_IMP_FORAPP  0x01010200 // AA.II.PP.RR
-#define OUB_IMP_VERSION 0x01010200 // A = major, I = minor, P = patch, R = release
+#define OUB_IMP_FORAPP  0x01010300 // AA.II.PP.RR
+#define OUB_IMP_VERSION 0x01010300 // A = major, I = minor, P = patch, R = release
 
 // The release numbering is supposed to restart at 1 for every new KeePass
 // version the plug-in is re-compiled for.
