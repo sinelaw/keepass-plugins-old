@@ -1,5 +1,5 @@
 /*
- * This file is part of the Oubliette (http://oubliette.sf.net/) import plug-in
+ * This file is part of the Oubliette (http://oubliette.sf.net/) import plugin
  * for KeePass (http://keepass.sf.net/).
  *
  * Copyright (C) 2005-2009 Sebastian Schuberth <sschuberth@gmail.com>
@@ -31,9 +31,6 @@
 #include "../Delphi/DateTime.h"
 #include "../Delphi/ShortString.h"
 
-#define OI_ARRAY_LENGTH(x) (sizeof(x)/sizeof(*x))
-#define OI_MIN_2(a,b) ((a)<(b)?(a):(b))
-
 #pragma pack(push,1)
 
 class OublietteFile
@@ -63,7 +60,7 @@ class OublietteFile
         }
 
         std::string getID() const {
-            return std::string(m_id,OI_ARRAY_LENGTH(m_id));
+            return std::string(m_id,_countof(m_id));
         }
 
         std::string getVersion() const {

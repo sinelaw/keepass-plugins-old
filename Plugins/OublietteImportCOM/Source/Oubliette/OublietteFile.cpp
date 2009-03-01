@@ -1,5 +1,5 @@
 /*
- * This file is part of the Oubliette (http://oubliette.sf.net/) import plug-in
+ * This file is part of the Oubliette (http://oubliette.sf.net/) import plugin
  * for KeePass (http://keepass.sf.net/).
  *
  * Copyright (C) 2005-2009 Sebastian Schuberth <sschuberth@gmail.com>
@@ -19,10 +19,6 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-
-#ifdef COMPILE_DLL_EX
-    #include "../StdAfx.h"
-#endif
 
 #include "OublietteFile.h"
 
@@ -93,7 +89,7 @@ const OublietteFile::CipherTextHeader* OublietteFile::decrypt(const string& pass
     );
 
     // Clamp the key length to its allowed maximum.
-    unsigned int key_length=OI_MIN_2(
+    unsigned int key_length=min(
         static_cast<unsigned int>(sizeof(digest)),
         static_cast<unsigned int>(CIPHER::MAX_KEYLENGTH)
     );

@@ -1,5 +1,5 @@
 /*
- * This file is part of the Oubliette (http://oubliette.sf.net/) import plug-in
+ * This file is part of the Oubliette (http://oubliette.sf.net/) import plugin
  * for KeePass (http://keepass.sf.net/).
  *
  * Copyright (C) 2005-2009 Sebastian Schuberth <sschuberth@gmail.com>
