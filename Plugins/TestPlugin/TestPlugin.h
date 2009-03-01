@@ -27,7 +27,7 @@
 #ifndef ___TEST_PLUGIN_H___
 #define ___TEST_PLUGIN_H___
 
-#include "../PluginFramework/PluginImpl.h"
+#include "../../Tools/PluginFramework/PluginImpl.h"
 
 class CTestPluginImpl : public PluginFramework::PluginImpl {
 public:

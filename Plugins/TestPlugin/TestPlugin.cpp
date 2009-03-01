@@ -25,8 +25,8 @@
 */
 
 #include "TestPlugin.h"
-#include "../PluginFramework/CreatePlugin.h"
-#include "../PluginFramework/WinUtil.h"
+#include "../../Tools/PluginFramework/CreatePlugin.h"
+#include "../../Tools/PluginFramework/WinUtil.h"
 
 // Optional definitions:  Define them only if you need them for something.
 
