@@ -53,13 +53,11 @@ END
 //
 
 IDD_OUB_PWD_DIALOG DIALOGEX 0, 0, 178, 53
-STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | 
-    WS_SYSMENU
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Oubliette Password Prompt"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
-    EDITTEXT        IDC_OUB_PWD_EDIT,12,6,156,14,ES_PASSWORD | 
-                    ES_AUTOHSCROLL
+    EDITTEXT        IDC_OUB_PWD_EDIT,12,6,156,14,ES_PASSWORD | ES_AUTOHSCROLL
     DEFPUSHBUTTON   "OK",IDOK,30,30,50,14
     PUSHBUTTON      "Cancel",IDCANCEL,102,30,50,14
 END
@@ -82,6 +80,45 @@ BEGIN
     END
 END
 #endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 1,15,0,0
+ PRODUCTVERSION 1,15,0,0
+ FILEFLAGSMASK 0x17L
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x4L
+ FILETYPE 0x2L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904b0"
+        BEGIN
+            VALUE "Comments", "Plugin for KeePass 1.x with x >= 15"
+            VALUE "CompanyName", "Sebastian Schuberth <sschuberth@gmail.com>"
+            VALUE "FileDescription", "Oubliette Import Plugin"
+            VALUE "FileVersion", "1.15.0.0"
+            VALUE "LegalCopyright", "Copyright (C) 2009 Sebastian Schuberth"
+            VALUE "OriginalFilename", "OublietteImport.dll"
+            VALUE "ProductName", "KeePass Plugin"
+            VALUE "ProductVersion", "1.15.0.0"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x409, 1200
+    END
+END
 
 #endif    // English (U.S.) resources
 /////////////////////////////////////////////////////////////////////////////
