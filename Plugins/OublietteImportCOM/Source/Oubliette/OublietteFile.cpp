@@ -2,7 +2,7 @@
  * This file is part of the Oubliette (http://oubliette.sf.net/) import plug-in
  * for KeePass (http://keepass.sf.net/).
  *
- * Copyright (C) 2005-2008 Sebastian Schuberth <sschuberth@gmail.com>
+ * Copyright (C) 2005-2009 Sebastian Schuberth <sschuberth@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,7 +34,9 @@
 using namespace std;
 
 OublietteFile::OublietteFile(const string& name)
-  :m_data_chunk(NULL),m_data_size_padded(0) {
+:   m_data_chunk(NULL)
+,   m_data_size_padded(0)
+{
     // Try to open the specified file for reading.
     ifstream file(name.c_str(),ios::binary);
     if (!file) {
@@ -71,7 +73,8 @@ OublietteFile::OublietteFile(const string& name)
 }
 
 template<typename CIPHER>
-const OublietteFile::CipherTextHeader* OublietteFile::decrypt(const string& password) {
+const OublietteFile::CipherTextHeader* OublietteFile::decrypt(const string& password)
+{
     using namespace CryptoPP;
 
     // Encryption for the "random" Initialization Vector.
@@ -250,7 +253,8 @@ const OublietteFile::CipherTextHeader* OublietteFile::decrypt(const string& pass
     return header;
 }
 
-const OublietteFile::CipherTextHeader* OublietteFile::decryptData(const string& password) {
+const OublietteFile::CipherTextHeader* OublietteFile::decryptData(const string& password)
+{
     using namespace CryptoPP;
 
     switch (m_plain_header.getAlgorithm()) {
@@ -263,7 +267,8 @@ const OublietteFile::CipherTextHeader* OublietteFile::decryptData(const string& 
     return NULL;
 }
 
-OublietteFile::Account OublietteFile::processNext() {
+OublietteFile::Account OublietteFile::processNext()
+{
     Account result;
     int **ptr=(int**)&m_data_entry,length;
 

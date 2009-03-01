@@ -2,7 +2,7 @@
  * This file is part of the Oubliette (http://oubliette.sf.net/) import plug-in
  * for KeePass (http://keepass.sf.net/).
  *
- * Copyright (C) 2005-2006 Sebastian Schuberth <sschuberth@gmail.com>
+ * Copyright (C) 2005-2009 Sebastian Schuberth <sschuberth@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,9 +36,14 @@
 
 #pragma pack(push,1)
 
-class OublietteFile {
+class OublietteFile
+{
   public:
-    enum Algorithm { ALGO_BLOWFISH,ALGO_IDEA };
+
+    enum Algorithm {
+        ALGO_BLOWFISH
+    ,   ALGO_IDEA
+    };
 
     // This is a security limit for corrupted files; otherwise memory allocation
     // for strings would take ages for large values.
@@ -46,10 +51,12 @@ class OublietteFile {
 
     // This is the plain text header that starts the Oubliette file. It needs to
     // be a POD object of 12 bytes.
-    class PlainTextHeader {
+    class PlainTextHeader
+    {
         friend OublietteFile;
 
       public:
+
         PlainTextHeader() {
             assert(sizeof(*this)==12);
             memset(this,0,sizeof(*this));
@@ -85,6 +92,7 @@ class OublietteFile {
         }
 
       private:
+
         char m_id[5];
         unsigned char m_major_ver,m_minor_ver;
         unsigned char m_algo;
@@ -93,8 +101,10 @@ class OublietteFile {
 
     // This is the cipher text header that starts the encrypted data. It needs
     // to be a POD object of 182 bytes.
-    class CipherTextHeader {
+    class CipherTextHeader
+    {
       public:
+
         static const unsigned char MAX_COMMENT_LENGTH=80;
 
         CipherTextHeader() {
@@ -123,6 +133,7 @@ class OublietteFile {
         }
 
       private:
+
         unsigned char m_tag; // Unused, thus not exported via access methods.
         double m_created,m_modified;
         ShortString<MAX_COMMENT_LENGTH> m_comment;
@@ -177,6 +188,7 @@ class OublietteFile {
     const std::string& getCategoryName(int index) const;
 
   private:
+
     template<typename CIPHER>
     const CipherTextHeader* decrypt(const std::string& password);
 
@@ -192,19 +204,23 @@ class OublietteFile {
 
 #pragma pack(pop)
 
-inline OublietteFile::~OublietteFile() {
+inline OublietteFile::~OublietteFile()
+{
     delete [] m_data_chunk;
 }
 
-inline OublietteFile::operator bool() const {
+inline OublietteFile::operator bool() const
+{
     return m_plain_header.isValid();
 }
 
-inline const std::string& OublietteFile::getLastErrorMessage() const {
+inline const std::string& OublietteFile::getLastErrorMessage() const
+{
     return m_last_error_msg;
 }
 
-inline const std::string& OublietteFile::getCategoryName(int index) const {
+inline const std::string& OublietteFile::getCategoryName(int index) const
+{
     static const std::string empty;
     if (index>=0 && index<static_cast<int>(m_category_names.size()))
         return m_category_names[index];

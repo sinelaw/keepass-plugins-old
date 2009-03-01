@@ -2,7 +2,7 @@
  * This file is part of the Oubliette (http://oubliette.sf.net/) import plug-in
  * for KeePass (http://keepass.sf.net/).
  *
- * Copyright (C) 2005-2006 Sebastian Schuberth <sschuberth@gmail.com>
+ * Copyright (C) 2005-2009 Sebastian Schuberth <sschuberth@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,8 +29,10 @@
 // This class represents a Delphi short string. It needs to be a POD object of
 // 256 bytes.
 template<unsigned char MAX_LENGTH=255>
-class ShortString {
+class ShortString
+{
   public:
+
     ShortString() {
         assert(sizeof(*this)==256);
     }
@@ -40,6 +42,7 @@ class ShortString {
     }
 
   private:
+
     unsigned char m_length;
     char m_string[MAX_LENGTH];
 };

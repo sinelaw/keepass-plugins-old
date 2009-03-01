@@ -2,7 +2,7 @@
  * This file is part of the Oubliette (http://oubliette.sf.net/) import plug-in
  * for KeePass (http://keepass.sf.net/).
  *
- * Copyright (C) 2005-2006 Sebastian Schuberth <sschuberth@gmail.com>
+ * Copyright (C) 2005-2009 Sebastian Schuberth <sschuberth@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,8 +27,10 @@
 #include <ctime>
 
 // This class represents Delphi date and time encoded into a "double".
-class DateTime {
+class DateTime
+{
   public:
+
     DateTime(double date_time=0)
       :m_date_time(date_time),m_need_update(true) {}
 
@@ -84,6 +86,7 @@ class DateTime {
     }
 
   private:
+
     static double frac(double x) {
         if (x>0)
             return (x-floor(x));
