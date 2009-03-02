@@ -20,6 +20,8 @@
  *
  */
 
+#include "../StdAfx.h"
+
 #include "OublietteFile.h"
 
 #include <cryptopp/sha.h>
@@ -29,7 +31,7 @@
 
 using namespace std;
 
-OublietteFile::OublietteFile(const string& name)
+OublietteFile::OublietteFile(string const& name)
 :   m_data_chunk(NULL)
 ,   m_data_size_padded(0)
 {
@@ -69,7 +71,7 @@ OublietteFile::OublietteFile(const string& name)
 }
 
 template<typename CIPHER>
-const OublietteFile::CipherTextHeader* OublietteFile::decrypt(const string& password)
+OublietteFile::CipherTextHeader const* OublietteFile::decrypt(string const& password)
 {
     using namespace CryptoPP;
 
@@ -84,7 +86,7 @@ const OublietteFile::CipherTextHeader* OublietteFile::decrypt(const string& pass
     memset(digest,0xff,sizeof(digest));
     SHA().CalculateDigest(
         digest,
-        reinterpret_cast<const byte*>(password.c_str()),
+        reinterpret_cast<byte const*>(password.c_str()),
         static_cast<unsigned int>(password.length())
     );
 
@@ -138,7 +140,7 @@ const OublietteFile::CipherTextHeader* OublietteFile::decrypt(const string& pass
     // Decrypt the data chunk.
     dec_data.ProcessData(
         reinterpret_cast<byte*>(m_data_chunk),
-        reinterpret_cast<const byte*>(m_data_chunk),
+        reinterpret_cast<byte const*>(m_data_chunk),
         process_size
     );
 
@@ -172,7 +174,7 @@ const OublietteFile::CipherTextHeader* OublietteFile::decrypt(const string& pass
             }
 
             // Skip embedded category icons (a Delphi TImageList) if present.
-            const int TPF0=0x30465054;
+            int const TPF0=0x30465054;
             if (*(*ptr4)++!=TPF0) {
                 m_last_error_msg="Invalid Delphi resource header.";
                 return NULL;
@@ -204,7 +206,7 @@ const OublietteFile::CipherTextHeader* OublietteFile::decrypt(const string& pass
 
             m_data_entry+=5;
 
-            const int IL11=0x01014c49;
+            int const IL11=0x01014c49;
             if (*(*ptr4)++!=IL11) {
                 m_last_error_msg="Invalid Delphi TImageList header.";
                 return NULL;
@@ -226,7 +228,7 @@ const OublietteFile::CipherTextHeader* OublietteFile::decrypt(const string& pass
             BitmapFileHeader bmfh;
             BitmapInfoHeader bmih;
 
-            const short BM=0x4d42;
+            short const BM=0x4d42;
             while (**ptr2==BM) {
                 memcpy(&bmfh,m_data_entry,sizeof(bmfh));
                 m_data_entry+=sizeof(bmfh);
@@ -249,7 +251,7 @@ const OublietteFile::CipherTextHeader* OublietteFile::decrypt(const string& pass
     return header;
 }
 
-const OublietteFile::CipherTextHeader* OublietteFile::decryptData(const string& password)
+OublietteFile::CipherTextHeader const* OublietteFile::decryptData(string const& password)
 {
     using namespace CryptoPP;
 

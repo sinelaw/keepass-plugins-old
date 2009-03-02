@@ -44,7 +44,7 @@ class OublietteFile
 
     // This is a security limit for corrupted files; otherwise memory allocation
     // for strings would take ages for large values.
-    static const int MAX_STRING_LENGTH=65535;
+    static int const MAX_STRING_LENGTH=65535;
 
     // This is the plain text header that starts the Oubliette file. It needs to
     // be a POD object of 12 bytes.
@@ -102,7 +102,7 @@ class OublietteFile
     {
       public:
 
-        static const unsigned char MAX_COMMENT_LENGTH=80;
+        static unsigned char const MAX_COMMENT_LENGTH=80;
 
         CipherTextHeader() {
             assert(sizeof(*this)==182);
@@ -173,21 +173,21 @@ class OublietteFile
         std::string note;
     };
 
-    OublietteFile(const std::string& name);
+    OublietteFile(std::string const& name);
     ~OublietteFile();
 
     operator bool() const;
-    const std::string& getLastErrorMessage() const;
+    std::string const& getLastErrorMessage() const;
 
-    const CipherTextHeader* decryptData(const std::string& password);
+    CipherTextHeader const* decryptData(std::string const& password);
 
     Account processNext();
-    const std::string& getCategoryName(int index) const;
+    std::string const& getCategoryName(int index) const;
 
   private:
 
     template<typename CIPHER>
-    const CipherTextHeader* decrypt(const std::string& password);
+    CipherTextHeader const* decrypt(std::string const& password);
 
     PlainTextHeader m_plain_header;
     unsigned char m_password_hash[32];
@@ -211,14 +211,14 @@ inline OublietteFile::operator bool() const
     return m_plain_header.isValid();
 }
 
-inline const std::string& OublietteFile::getLastErrorMessage() const
+inline std::string const& OublietteFile::getLastErrorMessage() const
 {
     return m_last_error_msg;
 }
 
-inline const std::string& OublietteFile::getCategoryName(int index) const
+inline std::string const& OublietteFile::getCategoryName(int index) const
 {
-    static const std::string empty;
+    static std::string const empty;
     if (index>=0 && index<static_cast<int>(m_category_names.size()))
         return m_category_names[index];
     return empty;

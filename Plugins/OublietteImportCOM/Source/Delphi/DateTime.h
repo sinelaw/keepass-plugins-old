@@ -101,7 +101,7 @@ class DateTime
 
     static bool convert(double _date_time,tm* _tm) {
         // Offset to 1970-Jan-01 in seconds.
-        static const time_t offset=2209161600;
+        static time_t const offset=2209161600;
 
         // Days since 1899-Dec-30.
         time_t days=(time_t)trunc(_date_time);
