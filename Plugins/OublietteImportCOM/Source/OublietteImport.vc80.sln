@@ -9,7 +9,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "OublietteImport", "Oubliett
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cryptlib", "..\Extern\cryptopp\cryptlib.vcproj", "{3423EC9A-52E4-4A4D-9753-EDEBC38785EF}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PluginFramework", "..\..\..\Tools\PluginFramework\PluginFramework.vcproj", "{485EF795-711F-4659-838A-801E506A46F7}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PluginFramework", "..\..\PluginFramework\PluginFramework.vcproj", "{485EF795-711F-4659-838A-801E506A46F7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -23,7 +23,7 @@
 #ifndef PLUGIN_H
 #define PLUGIN_H
 
-#include "../../../Tools/PluginFramework/PluginImpl.h"
+#include "../../PluginFramework/PluginImpl.h"
 
 class COublietteImportPlugin:public PluginFramework::PluginImpl
 {

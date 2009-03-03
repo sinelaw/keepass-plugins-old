@@ -25,7 +25,7 @@
 #include "PlugIn.h"
 #include "Oubliette/OublietteFile.h"
 
-#include "../../../Tools/PluginFramework/CreatePlugin.h"
+#include "../../PluginFramework/CreatePlugin.h"
 
 #define PLUGIN_NAME _T("Oubliette Import Plugin")
 
