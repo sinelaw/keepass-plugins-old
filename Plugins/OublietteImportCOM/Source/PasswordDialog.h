@@ -32,10 +32,12 @@ class CPasswordDialog:public CDialog
   public:
 
     CPasswordDialog(CWnd* pParent=NULL)
-        :CDialog(IDD_OUB_PWD_DIALOG,pParent) {}
+    :   CDialog(IDD_OUB_PWD_DIALOG,pParent)
+    {}
 
-    CString const& GetPassword() const
-        { return m_password; }
+    CString const& GetPassword() const {
+        return m_password;
+    }
 
   protected:
 
