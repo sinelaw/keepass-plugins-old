@@ -41,7 +41,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="..\Extern"
-				PreprocessorDefinitions="COMPILE_DLL_EX;WIN32;_DEBUG;_WINDOWS;_USRDLL"
+				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="1"
@@ -121,7 +121,7 @@
 				EnableIntrinsicFunctions="true"
 				OmitFramePointers="true"
 				AdditionalIncludeDirectories="..\Extern"
-				PreprocessorDefinitions="COMPILE_DLL_EX;WIN32;NDEBUG;_WINDOWS;_USRDLL"
+				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL"
 				StringPooling="true"
 				RuntimeLibrary="0"
 				EnableFunctionLevelLinking="true"
@@ -225,6 +225,14 @@
 		</File>
 		<File
 			RelativePath=".\Resource.h"
+			>
+		</File>
+		<File
+			RelativePath=".\StdAfx.cpp"
+			>
+		</File>
+		<File
+			RelativePath=".\StdAfx.h"
 			>
 		</File>
 	</Files>
