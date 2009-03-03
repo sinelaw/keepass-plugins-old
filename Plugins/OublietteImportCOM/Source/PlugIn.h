@@ -25,6 +25,8 @@
 
 #include "../../PluginFramework/PluginImpl.h"
 
+class DateTime;
+
 class COublietteImportPlugin:public PluginFramework::PluginImpl
 {
   public:
@@ -41,6 +43,8 @@ class COublietteImportPlugin:public PluginFramework::PluginImpl
     STDMETHODIMP_(BOOL) OnMessage(DWORD dwCode,LPARAM lParamW,LPARAM lParamL);
 
   private:
+
+    static PW_TIME ConvertDateTime(DateTime const& dt);
 
     bool ImportOublietteFile(LPCTSTR name);
 

@@ -166,17 +166,19 @@ STDMETHODIMP_(BOOL) COublietteImportPlugin::OnMessage(DWORD dwCode,LPARAM lParam
     return TRUE;
 }
 
-//static PW_TIME ConvertDateTime(const DateTime& dt) {
-//    PW_TIME t;
-//    t.shYear=static_cast<USHORT>(dt.getYear());
-//    t.btMonth=static_cast<BYTE>(dt.getMonth());
-//    t.btDay=static_cast<BYTE>(dt.getDay());
-//    t.btHour=static_cast<BYTE>(dt.getHour());
-//    t.btMinute=static_cast<BYTE>(dt.getMinute());
-//    t.btSecond=static_cast<BYTE>(dt.getSecond());
-//    return t;
-//}
+PW_TIME COublietteImportPlugin::ConvertDateTime(DateTime const& dt)
+{
+    PW_TIME t;
 
+    t.shYear=static_cast<USHORT>(dt.getYear());
+    t.btMonth=static_cast<BYTE>(dt.getMonth());
+    t.btDay=static_cast<BYTE>(dt.getDay());
+    t.btHour=static_cast<BYTE>(dt.getHour());
+    t.btMinute=static_cast<BYTE>(dt.getMinute());
+    t.btSecond=static_cast<BYTE>(dt.getSecond());
+
+    return t;
+}
 
 bool COublietteImportPlugin::ImportOublietteFile(LPCTSTR name)
 {
