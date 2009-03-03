@@ -23,6 +23,8 @@
 #include "StdAfx.h"
 
 #include "PlugIn.h"
+#include "PasswordDialog.h"
+
 #include "Oubliette/OublietteFile.h"
 
 #include "../../PluginFramework/CreatePlugin.h"
@@ -199,10 +201,10 @@ bool COublietteImportPlugin::ImportOublietteFile(LPCTSTR name)
     CWnd parent;
     parent.Attach(m_PluginAPI->GetMainWindowHandle());
 
-    //CPasswordDialog dialog(&parent);
-    //if (dialog.DoModal()!=IDOK) {
-    //    return false;
-    //}
+    CPasswordDialog dialog(&parent);
+    if (dialog.DoModal()!=IDOK) {
+        return false;
+    }
 
     return true;
 
