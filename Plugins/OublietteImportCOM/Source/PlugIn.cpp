@@ -38,6 +38,9 @@
  * Mandatory symbols
  */
 
+// Required to make AfxGetApp() called internally by CDialog::DoModal() return non-NULL.
+CWinApp theApp;
+
 extern std_string const g_PluginName(PLUGIN_NAME);
 
 KP_EXPORT HRESULT KP_API KP_I_CREATEINSTANCE_DECL(REFIID riid,void** ppvObject,IKpUnknown* pAPI)
@@ -199,14 +202,7 @@ bool COublietteImportPlugin::ImportOublietteFile(LPCTSTR name)
     // implemented.
 
     // Switch to the DLL's resources.
-    AFX_MODULE_STATE* state=AfxGetStaticModuleState();
-    AFX_MANAGE_STATE(state)
-
-    // As neither the EXE nor the DLL have a CWinApp, but the message pump
-    // called by CDialog::DoModal() needs one, fake a CWinApp here to make
-    // AfxGetApp() return non-NULL
-    CWinApp app;
-    app.m_hInstance=state->m_hCurrentInstanceHandle;
+    AFX_MANAGE_STATE(AfxGetStaticModuleState())
 
     CPasswordDialog dialog;
     if (dialog.DoModal()!=IDOK) {
