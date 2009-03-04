@@ -198,10 +198,17 @@ bool COublietteImportPlugin::ImportOublietteFile(LPCTSTR name)
     // TODO: Maybe use m_PluginAPI->ShowDialog() here in the future, when it is
     // implemented.
 
-    CWnd parent;
-    parent.Attach(m_PluginAPI->GetMainWindowHandle());
+    // Switch to the DLL's resources.
+    AFX_MODULE_STATE* state=AfxGetStaticModuleState();
+    AFX_MANAGE_STATE(state)
 
-    CPasswordDialog dialog(&parent);
+    // As neither the EXE nor the DLL have a CWinApp, but the message pump
+    // called by CDialog::DoModal() needs one, fake a CWinApp here to make
+    // AfxGetApp() return non-NULL
+    CWinApp app;
+    app.m_hInstance=state->m_hCurrentInstanceHandle;
+
+    CPasswordDialog dialog;
     if (dialog.DoModal()!=IDOK) {
         return false;
     }
