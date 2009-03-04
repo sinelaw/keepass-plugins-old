@@ -31,7 +31,7 @@
 
 #define PLUGIN_NAME _T("Oubliette Import Plugin")
 
-#define PLUGIN_ICON 49+1 // Opened folder
+#define PLUGIN_ICON 49+1 // Open folder icon.
 #define PLUGIN_MENU _T("&Oubliette OUB File...")
 
 /*
@@ -90,11 +90,11 @@ STDMETHODIMP_(BOOL) COublietteImportPlugin::OnMessage(DWORD dwCode,LPARAM lParam
             _stprintf_s(
                 buffer
             ,   _countof(buffer)-1
-            ,   "This is a plugin to import Oubliette OUB files (see http://oubliette.sf.net/),\n"
+            ,   _T("This is a plugin to import Oubliette OUB files (see http://oubliette.sf.net/),\n"
                 "it requires KeePass 1.x with x >= 15.\n"
                 "Written by Sebastian Schuberth <sschuberth@gmail.com>.\n\n"
                 "Usage note: You need to first create or open a KeePass database file\n"
-                "to import to before you can choose to import from an Oubliette file."
+                "to import to before you can choose to import from an Oubliette file.")
             );
 
             MessageBox(
@@ -213,44 +213,49 @@ bool COublietteImportPlugin::ImportOublietteFile(LPCTSTR name)
         return false;
     }
 
-    return true;
-
-#if 0
+    // Try to decrypt the file with the specified password.
     CT2CA password(dialog.GetPassword());
-    const OublietteFile::CipherTextHeader *header=file.decryptData(password.m_psz);
+    OublietteFile::CipherTextHeader const* header=file.decryptData(password.m_psz);
     if (!header) {
-        MessageBox(w.m_hWnd,file.getLastErrorMessage().c_str(),PLUGIN_NAME,MB_OK|MB_ICONWARNING);
-        return;
+        MessageBox(
+            m_PluginAPI->GetMainWindowHandle()
+        ,   file.getLastErrorMessage().c_str()
+        ,   PLUGIN_NAME
+        ,   MB_OK|MB_ICONWARNING
+        );
+        return false;
     }
-
-    CPwManager *pMgr=(CPwManager*)g_kpAppInfo.pPwMgr;
 
     // Create a top-level group to import to.
     PW_GROUP g;
     ZeroMemory(&g,sizeof(PW_GROUP));
-    // DWORD uGroupId;
-    g.uImageId=49; // Open folder icon.
-    g.pszGroupName=_T(GROUP_NAME);
-    g.tCreation=ConvertDateTime(header->getCreationTime());
-    g.tLastMod=ConvertDateTime(header->getModificationTime());
-    g.tLastAccess=ConvertDateTime(header->getModificationTime());
-    pMgr->GetNeverExpireTime(&g.tExpire);
-    // USHORT usLevel;
-    pMgr->AddGroup(&g);
+
+    if (m_Database->GetGroupId(PLUGIN_NAME)==DWORD_MAX) {
+        // DWORD uGroupId;
+        g.uImageId=49; // Open folder icon.
+        g.pszGroupName=PLUGIN_NAME;
+        g.tCreation=ConvertDateTime(header->getCreationTime());
+        g.tLastMod=ConvertDateTime(header->getModificationTime());
+        g.tLastAccess=ConvertDateTime(header->getModificationTime());
+        m_PluginAPI->GetNeverExpireTime(&g.tExpire);
+        // USHORT usLevel;
+
+        m_Database->AddGroup(&g);
+    }
 
     // Try to find Oubliette's path in the registry to read category names.
+    TCHAR buffer[256];
+    ULONG size;
     CString ini;
 
-    TCHAR buffer[256];
-    ULONG size=OI_ARRAY_LENGTH(buffer);
     ZeroMemory(buffer,sizeof(buffer));
 
     CRegKey r;
-    if (r.Open(HKEY_LOCAL_MACHINE,"Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Oubliette_is1",KEY_READ)==ERROR_SUCCESS) {
-        size=OI_ARRAY_LENGTH(buffer);
-        r.QueryStringValue("Inno Setup: App Path",buffer,&size);
+    if (r.Open(HKEY_LOCAL_MACHINE,_T("Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Oubliette_is1"),KEY_READ)==ERROR_SUCCESS) {
+        size=_countof(buffer);
+        r.QueryStringValue(_T("Inno Setup: App Path"),buffer,&size);
         ini=buffer;
-        ini+="\\Oubliette.ini";
+        ini+=_T("\\Oubliette.ini");
     }
 
     g.usLevel=1;
@@ -271,10 +276,10 @@ bool COublietteImportPlugin::ImportOublietteFile(LPCTSTR name)
         g.pszGroupName=category.GetBuffer();
 
         // Create each category only once; empty categories are not created.
-        DWORD dwGroupId=pMgr->GetGroupId(g.pszGroupName);
+        DWORD dwGroupId=m_Database->GetGroupId(g.pszGroupName);
         if (dwGroupId==DWORD_MAX) {
-            pMgr->AddGroup(&g);
-            dwGroupId=pMgr->GetGroupId(g.pszGroupName);
+            m_Database->AddGroup(&g);
+            dwGroupId=m_Database->GetGroupId(g.pszGroupName);
         }
 
         ZeroMemory(&e,sizeof(PW_ENTRY));
@@ -283,58 +288,64 @@ bool COublietteImportPlugin::ImportOublietteFile(LPCTSTR name)
         e.uImageId=g.uImageId;
 
         CA2CT pszTitle(account.name.c_str());
-        e.pszTitle=(TCHAR*)pszTitle.m_psz;
+        e.pszTitle=const_cast<TCHAR*>(pszTitle.m_psz);
 
         CA2CT pszURL(account.url.c_str());
-        e.pszURL=(TCHAR*)pszURL.m_psz;
+        e.pszURL=const_cast<TCHAR*>(pszURL.m_psz);
 
         CA2CT pszUserName(account.username.c_str());
-        e.pszUserName=(TCHAR*)pszUserName.m_psz;
+        e.pszUserName=const_cast<TCHAR*>(pszUserName.m_psz);
 
         CA2CT pszPassword(account.password.c_str());
-        e.pszPassword=(TCHAR*)pszPassword.m_psz;
-        e.uPasswordLen=(DWORD)_tcslen(e.pszPassword);
+        e.pszPassword=const_cast<TCHAR*>(pszPassword.m_psz);
+        e.uPasswordLen=static_cast<DWORD>(_tcslen(e.pszPassword));
 
         std::string additional;
 
-        if (!account.email.empty())
+        if (!account.email.empty()) {
             additional+="Email:\n"+account.email;
+        }
 
         if (!account.note.empty()) {
-            if (!additional.empty())
+            if (!additional.empty()) {
                 additional+="\n\n";
+            }
             additional+="Note:\n"+account.note;
         }
 
         if (!account.memo.empty()) {
-            if (!additional.empty())
+            if (!additional.empty()) {
                 additional+="\n\n";
+            }
             additional+="Memo:\n"+account.memo;
         }
 
         CA2CT pszAdditional(additional.c_str());
-        e.pszAdditional=(TCHAR*)pszAdditional.m_psz;
+        e.pszAdditional=const_cast<TCHAR*>(pszAdditional.m_psz);
 
         e.tCreation=ConvertDateTime(account.created);
         e.tLastMod=ConvertDateTime(account.created);
         e.tLastAccess=g.tLastAccess;
-        if (account.expires.isValid())
+        if (account.expires.isValid()) {
             e.tExpire=ConvertDateTime(account.expires);
-        else
-            pMgr->GetNeverExpireTime(&e.tExpire);
+        }
+        else {
+            m_PluginAPI->GetNeverExpireTime(&e.tExpire);
+        }
 
         // TCHAR *pszBinaryDesc;
         // BYTE *pBinaryData;
         // DWORD uBinaryDataLen;
 
-        pMgr->AddEntry(&e);
+        m_Database->AddEntry(&e);
     }
 
-    KP_Call(KPC_MODIFIED,TRUE,0,0);
-    KP_Call(KPC_UPDATE_GROUPLIST,0,0,0);
-    KP_Call(KPC_UPDATE_PASSWORDLIST,0,0,0);
-    int nItems=(int)KP_Query(KPQ_PWLIST_ITEMCOUNT,0);
-    KP_Call(KPC_PWLIST_ENSUREVISIBLE,nItems-1,FALSE,0);
-    KP_Call(KPC_UPDATE_TOOLBAR,0,0,0);
-#endif
+    m_PluginAPI->SetFileModified(TRUE);
+    m_PluginAPI->UpdateUI();
+    m_PluginAPI->UpdateToolBar();
+
+    INT item=m_PluginAPI->GetEntryListItemCount();
+    m_PluginAPI->EntryListEnsureVisible(item,FALSE);
+
+    return true;
 }
